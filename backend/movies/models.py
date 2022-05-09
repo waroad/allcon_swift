@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Board(models.Model):
+class Movie(models.Model):
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now_add=True)
     content = models.TextField()
