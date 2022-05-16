@@ -44,6 +44,15 @@ class MovieDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = MovieSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
+    def get_object(self):
+        queryset=self.get_queryset()
+        obj = queryset.get(pk=self.kwargs.get('pk'))
+        obj.liked=0
+        if obj.liker.filter(username=self.request.user).exists():
+            obj.liked=1
+        obj.save()
+        return obj
+
 
 class LikeMovie(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -56,9 +65,12 @@ class LikeMovie(APIView):
         current_board.likeCount = current_board.liker.all().count()
         if current_board.likeCount!=like_count_before:
             current_board.save()
-            return Response("successfully liked the board")
+            return Response("successfully liked the movie")
         else:
-            return Response("already liked the board")
+            current_board.liker.remove(self.request.user)
+            current_board.likeCount -= 1
+            current_board.save()
+            return Response("successfully disliked the movie")
 
 
 class ReviewList(generics.ListAPIView):
