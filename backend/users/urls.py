@@ -7,6 +7,7 @@ urlpatterns = [
     path('users/<int:pk>/', views.UserDetail.as_view()),
     path('register/', views.UserCreate.as_view()),
     path('delete/', views.UserDelete.as_view()),
+    path('users/current/', views.UserCurrent.as_view()),
 
 ]
 
