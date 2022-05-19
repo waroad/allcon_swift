@@ -30,10 +30,18 @@ class MovieList(generics.ListCreateAPIView):
         return queryset
 
     def create(self, request, *args, **kwargs):
+        user_liked_movies_list = ast.literal_eval(request.user.profile.searchedMovies)
+        if request.data['content'] in user_liked_movies_list:
+            user_liked_movies_list.remove(request.data['content'])
+        user_liked_movies_list.insert(0,request.data['content'])
+        if len(user_liked_movies_list)>20:
+            user_liked_movies_list.pop()
+        request.user.profile.searchedMovies = str(user_liked_movies_list)
+        request.user.profile.save()
         for query in self.get_queryset():
-            print(query.content)
             if query.content==request.data['content']:
-                return Response("Already Exist:"+str(query.id), status=status.HTTP_200_OK)
+                self.kwargs["pk"]=query.id
+                return generics.RetrieveAPIView.retrieve(self=self,request=request)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
