@@ -27,7 +27,6 @@ class UserDetail(generics.RetrieveUpdateAPIView):
     def update(self, request, *args, **kwargs):
         request.user.profile.taste = str(request.data['taste'])
         request.user.profile.save()
-
         return generics.RetrieveAPIView.retrieve(self=self, request=request)
 
 
