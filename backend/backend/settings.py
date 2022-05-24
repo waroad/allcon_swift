@@ -85,6 +85,7 @@ INSTALLED_APPS = [
     'users',
     'reviews',
     'movies',
+    'crawling',
 ]
 
 MIDDLEWARE = [
