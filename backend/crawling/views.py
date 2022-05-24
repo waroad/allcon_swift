@@ -24,6 +24,7 @@ class SearchResultViewSet(viewsets.ModelViewSet):
     queryset = SearchResult.objects.all()
     serializer_class = SearchResultSerializer
 
+
 class Search(View):
     s = Service('chromedriver')
     driver = webdriver.Chrome(service=s)
@@ -124,7 +125,7 @@ def get_justwatch_contents(keyword, driver):
             is_there_content_name = keyword in content_name
             if is_there_content_name:
                 print(content_name)
-                result['title'] = content_name
+                result['title'] = str(content_name)
                 print(content_link)
                 result['url'] = content_link
                 print(content_href)
@@ -132,10 +133,13 @@ def get_justwatch_contents(keyword, driver):
                 is_content_title = False
         else:
             content_sites = content.find_elements(By.CLASS_NAME, 'price-comparison__grid__row__icon')
+            content_year = content.find_element(By.CLASS_NAME, 'title-list-row__row-header-year').get_attribute(
+                'innerHTML')
             for site in content_sites:
                 sites.add(site.get_attribute('alt'))
             print(sites)
             site_list = list(sites)
+            result['title'] += content_year
             result['sites'] = site_list
             sites.clear()
             res[result_id] = result
@@ -179,10 +183,19 @@ def get_justwatch_detail_contents(url, driver):
     year = driver.find_element(By.XPATH,
                                '//*[@id="base"]/div[2]/div/div[2]/div[2]/div[1]/div[1]/div/span').text
     year = year.strip("("")")
-    sites = set()
-    content_sites = driver.find_elements(By.CLASS_NAME, 'price-comparison__grid__row__icon')
-    for site in content_sites:
-        sites.add(site.get_attribute('alt'))
+    sites = []
+    content_sites_list = driver.find_elements(By.CLASS_NAME, 'price-comparison__grid__row')
+    for site in content_sites_list:
+        content_sort = site.find_element(By.CLASS_NAME, 'price-comparison__grid__row__title-label').text
+        content_sites = site.find_elements(By.CLASS_NAME, 'price-comparison__grid__row__element__icon')
+        for content_site in content_sites:
+            content_icon = content_site.find_element(By.CLASS_NAME, 'price-comparison__grid__row__icon').get_attribute(
+                'alt')
+            content_price = content_site.find_element(By.CLASS_NAME, 'price-comparison__grid__row__price').text.split(
+                ' ')
+            sites_list_item = {'sort': content_sort, 'site': content_icon, 'price': content_price[0]}
+            sites.append(sites_list_item)
+
     synopsis = driver.find_element(By.XPATH, '//*[@id="base"]/div[2]/div/div[2]/div[6]/div[1]/div[3]/p/span').text
 
     print(title)
@@ -190,7 +203,7 @@ def get_justwatch_detail_contents(url, driver):
     print(year)
     res['year'] = year
     print(sites)
-    res['sites'] = list(sites)
+    res['sites'] = sites
     print(director.strip())
     res['director'] = director.strip()
     print(rating[1].strip())
