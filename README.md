@@ -29,6 +29,7 @@ API DOCUMENT
 |REST 명령어|주소|설명|필요입력값|
 |----------|---|---|------------|
 |POST|register/|유저 최초 회원가입|username:"a",password:"b",profile:{}|
+|POST|api/token/|로그인 여기서 불러온 access 토큰 추후 계속 사용.|username:"a",password:"b"|
 |DELETE|delete/|현재 로그인 되어 있는 유저 탈퇴|없음|
 |GET|users/current/|현재 로그인 되어 있는 유저의 정보 불러오기|없음|
 |PUT|users/<int:pk>/|유저 정보 수정, taste 인 취향만 수정 가능 int:pk 자리에 로그인 된 유저의 id 값 넣기. (username 과 별개로 id 값이 있음)|taste:['a','b']|
