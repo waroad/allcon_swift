@@ -53,6 +53,13 @@ API DOCUMENT
 |PUT|reviews/<int:pk>|해당 리뷰 수정. 주인만 할 수 있음.|content:"리뷰내용", movieId: "영화의 id 번호", star: "별점"|
 
 
+**CRAWLING 관련:**
+
+|REST 명령어|주소|설명|필요입력값|
+|-----------|---|---|----------|
+|GET|search_result/|크롤링을 시도하는 chromewebdriver창을 열고 닫기 위함|state:"open" 또는 "close"|
+|POST|search_result/|키워드로 서치하거나 상세페이지를 불러오기 위함|keyword:"콘텐츠 제목" 또는 url:"상세페이지 링크" 둘 중 하나만 보내면 됨|
+
 ---
 유저 프로파일 설명:
 
@@ -61,6 +68,5 @@ likedMovies: 찜한 영화 목록을 보여줌. 최근에 찜한 것이 앞에 �
 searchedMovies: 검색한 영화 목록을 보여줌. 최근에 검색한 것이 앞에 옴
 
 taste: 취향이 들어가 있음. 수정에서 취향 수정할 때 꼭 "['취향1',취향2','취향3']" 형식에 맞춰서 적기
-
 
 ---
