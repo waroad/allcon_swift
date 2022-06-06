@@ -1,3 +1,4 @@
+import datetime
 import json
 import random
 import re
@@ -40,7 +41,7 @@ class Search(View):
     s = Service(executable_path="C:/Users/pc/PycharmProjects/allcon_swift/backend/chromedriver.exe")
     driver = webdriver.Chrome(options=option, service=s)
 
-    base_url = "https://watcha.com/sign_in?redirect_uri=%2Fpayment%2Fchoose_plan"
+    base_url = "https://watcha.com/sign_in"
     driver.get(base_url)
     id_element = driver.find_element(By.XPATH, '//*[@id="root"]/div[1]/main/div[1]/main/div/form/div[1]/input')
     pswd_element = driver.find_element(By.XPATH,
@@ -57,6 +58,7 @@ class Search(View):
         print(recommend_category)
         if open_or_close and not recommend_category:
             if open_or_close == 'open':
+                self.driver.find_element(By.XPATH, '//*[@id="root"]/div[1]/main/div[1]/section/ul/li[1]/button').click()
                 return HttpResponse('web opened...')
             else:
                 self.driver.close()
@@ -194,7 +196,7 @@ def get_justwatch_detail_contents(url, driver):
     category = []
     try:
         categories_content = driver.find_element(By.XPATH,
-                                                 '//*[@id="base"]/div[2]/div/div[2]/div[6]/div[1]/div[1]/div[2]/div[2]')
+                                                 '//*[@id="base"]/div[2]/div/div[1]/div/aside/div[1]/div[3]/div[2]/div[2]')
         categories = categories_content.find_elements(By.TAG_NAME, 'span')
         for i in categories:
             category.append(i.get_attribute('innerHTML').strip("<span>"","" </span>""<!---->"))
@@ -205,7 +207,7 @@ def get_justwatch_detail_contents(url, driver):
     director = ""
     try:
         director = driver.find_element(By.XPATH,
-                                       '//*[@id="base"]/div[2]/div/div[2]/div[6]/div[1]/div[1]/div[4]/div[2]/span/a').get_attribute(
+                                       '//*[@id="base"]/div[2]/div/div[1]/div/aside/div[1]/div[3]/div[4]/div[2]/span/a').get_attribute(
             'innerHTML')
     except:
         print("no director")
@@ -213,7 +215,7 @@ def get_justwatch_detail_contents(url, driver):
     rating = ""
     try:
         rating = driver.find_element(By.XPATH,
-                                     '//*[@id="base"]/div[2]/div/div[2]/div[6]/div[1]/div[1]/div[1]/div[2]/div/div[2]/a')
+                                     '//*[@id="base"]/div[2]/div/div[1]/div/aside/div[1]/div[3]/div[1]/div[2]/div/div[2]/a')
         rating = rating.get_attribute('innerHTML').replace('>', '(')
         rating = rating.split('(')
         rating = rating[1].strip()
@@ -248,7 +250,7 @@ def get_justwatch_detail_contents(url, driver):
 
     synopsis = ""
     try:
-        synopsis = driver.find_element(By.XPATH, '//*[@id="base"]/div[2]/div/div[2]/div[6]/div[1]/div[3]/p/span').text
+        synopsis = driver.find_element(By.XPATH, '//*[@id="base"]/div[2]/div/div[2]/div[5]/div[1]/div[3]/p/span').text
     except:
         print("no synopsis")
 
@@ -368,19 +370,19 @@ def get_category_content(category, driver):
 
     res = {}
     user_category = ""
+    user_genre = []
 
     if category_list is not None:
         try:
-            random_category = random.choice(category_list)
-            user_category = category_dict[random_category]
-            res["genre"] = random_category
+            for category in category_list:
+                user_category += category_dict[category] + ','
+                user_genre.append(category)
+            res["genre"] = user_genre
         except:
             print("없는 장르")
             res["genre"] = ""
     else:
         user_category = category_dict[random.choice(list(category_dict.keys()))]
-
-
 
     base_url = "https://www.justwatch.com/kr?genres=" + user_category + "&providers=dnp,nfx,nvs,wac,wav"
     driver.get(base_url)
@@ -388,7 +390,7 @@ def get_category_content(category, driver):
     time.sleep(2)
 
     random_content = driver.find_elements(By.CLASS_NAME, 'title-list-grid__item')
-    for i in range(5):
+    for i in range(30):
         picture = random_content[i].find_element(By.CLASS_NAME, 'picture-comp__img')
         result = {
             "title": picture.get_attribute('alt'),
