@@ -195,8 +195,7 @@ def get_justwatch_detail_contents(url, driver):
     categories_content = ""
     category = []
     try:
-        categories_content = driver.find_element(By.XPATH,
-                                                 '//*[@id="base"]/div[2]/div/div[1]/div/aside/div[1]/div[3]/div[2]/div[2]')
+        categories_content = driver.find_element(By.XPATH, '//*[@id="base"]/div[2]/div/div[1]/div/aside/div[1]/div[3]/div[2]/div[2]')
         categories = categories_content.find_elements(By.TAG_NAME, 'span')
         for i in categories:
             category.append(i.get_attribute('innerHTML').strip("<span>"","" </span>""<!---->"))
@@ -206,16 +205,13 @@ def get_justwatch_detail_contents(url, driver):
 
     director = ""
     try:
-        director = driver.find_element(By.XPATH,
-                                       '//*[@id="base"]/div[2]/div/div[1]/div/aside/div[1]/div[3]/div[4]/div[2]/span/a').get_attribute(
-            'innerHTML')
+        director = driver.find_element(By.CLASS_NAME, 'title-credit-name').get_attribute('innerHTML')
     except:
         print("no director")
 
     rating = ""
     try:
-        rating = driver.find_element(By.XPATH,
-                                     '//*[@id="base"]/div[2]/div/div[1]/div/aside/div[1]/div[3]/div[1]/div[2]/div/div[2]/a')
+        rating = driver.find_element(By.CSS_SELECTOR, 'a[rel = "nofollow"]')
         rating = rating.get_attribute('innerHTML').replace('>', '(')
         rating = rating.split('(')
         rating = rating[1].strip()
@@ -224,8 +220,7 @@ def get_justwatch_detail_contents(url, driver):
 
     year = ""
     try:
-        year = driver.find_element(By.XPATH,
-                                   '//*[@id="base"]/div[2]/div/div[2]/div[2]/div[1]/div[1]/div/span').text
+        year = driver.find_element(By.CSS_SELECTOR, 'span.text-muted').text
         year = year.strip("("")")
     except:
         print("no year")
@@ -250,7 +245,7 @@ def get_justwatch_detail_contents(url, driver):
 
     synopsis = ""
     try:
-        synopsis = driver.find_element(By.XPATH, '//*[@id="base"]/div[2]/div/div[2]/div[5]/div[1]/div[3]/p/span').text
+        synopsis = driver.find_element(By.CSS_SELECTOR, 'span[data-v-4b43f143]').text
     except:
         print("no synopsis")
 
