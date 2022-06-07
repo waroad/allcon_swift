@@ -37,7 +37,7 @@ class Search(View):
     option.add_experimental_option("prefs", {
         "profile.default_content_setting_values.notifications": 1
     })
-    s = Service(executable_path="C:/Users/pc/PycharmProjects/allcon_swift/backend/chromedriver.exe")
+    s = Service(executable_path="C:/Users/user/Desktop/git/allcon_swift/backend/chromedriver.exe")
     driver = webdriver.Chrome(options=option, service=s)
 
     base_url = "https://watcha.com/sign_in?redirect_uri=%2Fpayment%2Fchoose_plan"
