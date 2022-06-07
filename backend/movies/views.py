@@ -31,9 +31,11 @@ class MovieList(generics.ListCreateAPIView):
 
     def create(self, request, *args, **kwargs):
         user_liked_movies_list = ast.literal_eval(request.user.profile.searchedMovies)
-        if request.data['content'] in user_liked_movies_list:
-            user_liked_movies_list.remove(request.data['content'])
-        user_liked_movies_list.insert(0,request.data['content'])
+        for i in user_liked_movies_list:
+            if i[0]==request.data['content']:
+                user_liked_movies_list.remove(i)
+                break
+        user_liked_movies_list.insert(0,[request.data['content'],request.data['movieURL'],request.data['imageURL']])
         if len(user_liked_movies_list)>20:
             user_liked_movies_list.pop()
         request.user.profile.searchedMovies = str(user_liked_movies_list)
@@ -73,17 +75,21 @@ class LikeMovie(APIView):
         current_board=Movie.objects.get(id=pk)
         movie_name = current_board.content
         print(movie_name)
+        print(current_board.imageURL)
         like_count_before=current_board.liker.all().count()
         current_board.liker.add(self.request.user)
         current_board.likeCount = current_board.liker.all().count()
         if current_board.likeCount!=like_count_before:
-            user_liked_movies_list.insert(0,movie_name)
+            user_liked_movies_list.insert(0,[movie_name,current_board.movieURL, current_board.imageURL])
             request.user.profile.likedMovies = str(user_liked_movies_list)
             request.user.profile.save()
             current_board.save()
             return Response("successfully liked the movie")
         else:
-            user_liked_movies_list.remove(movie_name)
+            for i in user_liked_movies_list:
+                if i[0] == movie_name:
+                    user_liked_movies_list.remove(i)
+                    break
             request.user.profile.likedMovies = str(user_liked_movies_list)
             request.user.profile.save()
             current_board.liker.remove(self.request.user)
